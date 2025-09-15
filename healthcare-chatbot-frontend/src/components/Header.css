@@ -1,0 +1,67 @@
+.container-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #e5e7eb;
+    padding: 12px 20px;
+    background-color: white;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 40px;
+    z-index: 2;
+}
+
+.user-email { color: #111827; }
+
+.logout-btn, .login-btn, .signup-btn {
+  background: #ffffff;
+  color: #111827;
+  border: 1px solid #e5e7eb;
+  padding: 4px 10px;
+  border-radius: 6px;
+  text-decoration: none;
+}
+.logout-btn:hover, .login-btn:hover, .signup-btn:hover { opacity: 0.9; }
+
+.heading {
+    font-size: 25px;
+    text-decoration: none;
+    color: black;
+}
+
+.btns {
+    width: 100%;
+    display: flex;
+    gap: 10px;
+}
+
+.mail-id {
+    font-size: medium;
+    margin: auto;
+}
+
+.logout-btn {
+    width: 7vw;
+    height: 5vh;
+    background: black;
+    color: white;
+    border-radius: 10px;
+    font-size: medium;
+    padding: 20px auto;
+    border: none;
+}
+
+.logout-btn:hover {
+    cursor: pointer;
+    opacity: .8;
+    border: 1px solid black;
+    transition: .9s ease-out;
+}
+
+.header-right {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}

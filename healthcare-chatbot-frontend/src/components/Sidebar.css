@@ -1,0 +1,157 @@
+.sidebar-hamburger {
+  position: fixed;
+  top: 85px;
+  left: 15px;
+  z-index: 5000;
+  background: #000;
+  color: white;
+  border: 1px solid #030303;
+  cursor: pointer;
+  width: 35px;
+  height: 30px;
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.sidebar-hamburger:hover {
+  background: #374151;
+}
+
+.hamburger-line {
+  display: block;
+  width: 20px;
+  height: 2px;
+  background: white;
+  margin-bottom: 4px;
+  border-radius: 2px;
+}
+
+
+.sidebar {
+  width: 250px;
+  height: 100vh;
+  background: #111;
+  color: white;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000; /* above header (z-index 2) */
+  transition: transform 0.3s ease;
+  border-right: 1px solid #1f2937;
+}
+
+.sidebar-title { color: white; }
+.newchat-btn { background: #1f2937; color: #f9fafb; }
+
+
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px;
+  border-bottom: 1px solid #1f2937;
+}
+
+.sidebar-title {
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.sidebar-close {
+  padding: 4px 8px;
+  border: none;
+  background: transparent;
+  color: #f9fafb;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.sidebar-close:hover {
+  background: #1f2937;
+}
+
+.sidebar.closed {
+  transform: translateX(-100%);
+}
+
+.sidebar-newchat {
+  padding: 12px;
+}
+
+.newchat-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: #1f2937;
+  color: #f9fafb;
+  border: none;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.newchat-btn:hover {
+  background: #374151;
+}
+
+.newchat-plus {
+  font-size: 1.2rem;
+}
+
+.sidebar-chats {
+  padding: 8px 12px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.chats-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #9ca3af;
+  margin-bottom: 6px;
+}
+
+.no-chats {
+  padding: 6px;
+  font-size: 0.85rem;
+  color: #9ca3af;
+}
+
+.chats-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.chat-item {
+  width: 100%;
+  text-align: left;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: #f9fafb;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.chat-item:hover {
+  background: #1f2937;
+}
+
+.chat-item.active {
+  background: #1f2937;
+}
+
+.chat-title {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

@@ -1,0 +1,9 @@
+/* Global layout */
+html, body, #root {
+  height: 100%;
+}
+
+body {
+  background: #f9fafb;
+  color: #111827;
+}

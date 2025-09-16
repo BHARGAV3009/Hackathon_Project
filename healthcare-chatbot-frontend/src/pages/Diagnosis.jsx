@@ -29,9 +29,10 @@ export default function Diagnosis() {
       const res = await fetch(`${import.meta.env.VITE_API_BASE || 'http://127.0.0.1:5000'}/api/diagnosis`, {
         method: "POST",
         headers: {
-          // Pass lightweight user context for backend persistence
+          // Include identity context + JWT if available
           'x-user-id': clientUser?.id || '',
           'x-user-email': clientUser?.email || '',
+          ...(clientUser?.token ? { 'Authorization': `Bearer ${clientUser.token}` } : {}),
         },
         body: form,
       });

@@ -13,7 +13,7 @@ export default function Signup({ setUser }) {
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  const onSubmit = (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault();
 
     if (!email || !password || !confirmPassword) {
@@ -24,11 +24,25 @@ export default function Signup({ setUser }) {
       return setError('Passwords do not match');
     }
 
-    const newUser = { id: `${Date.now()}`, email };
-    localStorage.setItem('hc_user', JSON.stringify(newUser));
-    setUser(newUser);
-    // After signup, go to Home dashboard (not Chat)
-    navigate('/home');
+    try {
+      // Real signup: create user with password, get JWT
+      const res = await fetch('http://localhost:5000/api/auth/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+      const data = await res.json();
+      if (!res.ok || !data.ok) throw new Error(data?.error || 'Signup failed');
+
+      const userDoc = data.user; // { _id, email, name }
+      const token = data.token;
+      const newUser = { id: userDoc._id, email: userDoc.email, name: userDoc.name, token };
+      localStorage.setItem('hc_user', JSON.stringify(newUser));
+      setUser(newUser);
+      navigate('/home');
+    } catch (err) {
+      setError(err.message || 'Signup failed');
+    }
   };
 
   return (

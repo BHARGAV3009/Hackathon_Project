@@ -14,6 +14,7 @@ import uploadRoutes from "./routes/upload.js";
 import geminiRoutes from "./routes/gemini.js";
 import diagnosisRoutes from "./routes/diagnosis.js"; // 👈 NEW
 import usersRoutes from "./routes/users.js";
+import authRoutes from "./routes/auth.js";
 
 // Models
 import User from "./models/User.js";
@@ -59,6 +60,7 @@ app.use("/api/upload", uploadRoutes);
 app.use("/api/gemini", geminiRoutes);
 app.use("/api/diagnosis", diagnosisRoutes); // 👈 Diagnosis endpoint
 app.use("/api/users", usersRoutes);
+app.use("/api/auth", authRoutes);
 
 // Test route
 app.get("/", (req, res) => {

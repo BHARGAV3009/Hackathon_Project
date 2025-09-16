@@ -4,6 +4,7 @@ import fs from "fs";
 import path from "path";
 import { runDiagnosis } from "../ml/diagnosisModel.js";
 import Diagnosis from "../models/Diagnosis.js";
+import { requireAuthOptional, requireAuth } from "../middleware/auth.js";
 
 const router = express.Router();
 
@@ -23,7 +24,7 @@ const upload = multer({ storage });
 // POST /api/diagnosis
 // Accepts: multipart/form-data with optional image file under field "image", and
 // JSON fields via text fields: vitals (JSON string), text (string)
-router.post("/", upload.single("image"), async (req, res) => {
+router.post("/", requireAuthOptional, upload.single("image"), async (req, res) => {
   try {
     // Parse vitals if sent as JSON string
     let vitals = undefined;
@@ -44,8 +45,9 @@ router.post("/", upload.single("image"), async (req, res) => {
 
     const result = await runDiagnosis({ vitals, imagePath, imageBuffer, imageMimeType, text });
 
-    // Persist to MongoDB
+    // Persist to MongoDB with authenticated userId if present
     const saved = await Diagnosis.create({
+      userId: req.auth?.userId || undefined,
       clientUserId,
       userEmail,
       vitals,
@@ -62,12 +64,11 @@ router.post("/", upload.single("image"), async (req, res) => {
   }
 });
 
-// GET /api/diagnosis (list history, optional user filter)
-router.get("/", async (req, res) => {
+// GET /api/diagnosis (list history)
+// Requires JWT; returns only records for the authenticated user
+router.get("/", requireAuth, async (req, res) => {
   try {
-    const clientUserId = req.header("x-user-id") || req.query.userId;
-    const filter = clientUserId ? { clientUserId } : {};
-    const items = await Diagnosis.find(filter).sort({ createdAt: -1 }).limit(100);
+    const items = await Diagnosis.find({ userId: req.auth.userId }).sort({ createdAt: -1 }).limit(100);
     return res.json({ ok: true, items });
   } catch (err) {
     console.error("Diagnosis list error:", err?.stack || err?.message || err);

@@ -4,6 +4,7 @@ import Upload from "../models/Upload.js";
 import fs from "fs";
 import path from "path";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { requireAuth } from "../middleware/auth.js";
 
 const router = express.Router();
 
@@ -31,18 +32,12 @@ const upload = multer({
 // Gemini setup
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-router.post("/", upload.single("file"), async (req, res) => {
+router.post("/", requireAuth, upload.single("file"), async (req, res) => {
   let { userId } = req.body || {};
   if (!req.file) return res.status(400).json({ error: "Missing file" });
 
-  // Fallback: assign test user if none provided
-  try {
-    if (!userId) {
-      const { default: User } = await import("../models/User.js");
-      const testUser = await User.findOne({ email: "bhargav@example.com" });
-      if (testUser) userId = testUser._id;
-    }
-  } catch {}
+  // Use authenticated user
+  userId = req.auth.userId;
 
   const fileUrl = `/uploads/${req.file.filename}`;
 
@@ -77,6 +72,17 @@ router.post("/", upload.single("file"), async (req, res) => {
   } catch (err) {
     console.error("❌ Image analysis error:", err.response?.data || err.stack || err.message);
     res.status(500).json({ error: "Image analysis failed" });
+  }
+});
+
+// GET /api/upload - list current user's uploads (latest first)
+router.get("/", requireAuth, async (req, res) => {
+  try {
+    const items = await Upload.find({ userId: req.auth.userId }).sort({ timestamp: -1 }).limit(100);
+    return res.json({ ok: true, items });
+  } catch (err) {
+    console.error("Upload history error:", err?.message || err);
+    return res.status(500).json({ ok: false, error: "Failed to load uploads" });
   }
 });
 

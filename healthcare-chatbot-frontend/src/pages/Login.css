@@ -1,11 +1,13 @@
 /* Container */
 .login-container {
+  width: 100vw;
   min-height: 80vh;
   display: flex;
   justify-content: center;
-  align-items: flex-start;
-  padding-top: 80px;
+  align-items: center;
+  /* padding-top: 80px; */
   background: #f9fafb;
+  margin-left: -20%;
 }
 
 /* Box */

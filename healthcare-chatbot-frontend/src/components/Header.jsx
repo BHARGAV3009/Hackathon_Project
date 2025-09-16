@@ -53,6 +53,7 @@ export default function Header({ user, setUser, onNewChat }) {
                 </div>
                 <button className="menu-item" onClick={() => { setMenuOpen(false); navigate('/profile'); }}>Profile</button>
                 <button className="menu-item" onClick={() => { setMenuOpen(false); navigate('/'); }}>Home</button>
+                <button className="menu-item" onClick={() => { setMenuOpen(false); navigate('/history'); }}>History</button>
                 <hr className="menu-sep"/>
                 <button className="menu-item danger" onClick={logout}>Logout</button>
               </div>

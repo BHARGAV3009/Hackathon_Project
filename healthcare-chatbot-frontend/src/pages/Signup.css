@@ -1,21 +1,26 @@
 .signup-wrapper {
-  min-height: 80vh;
+  min-height: 70vh;
   display: flex;
   justify-content: center;
-  align-items: flex-start;
-  padding-top: 10px;
+  align-items: center;
+  /* padding-top: 10px; */
   background: #f9fafb;
+  margin-left: -20%;
+  margin-top: -60px;
 }
 
 
 .signup-container {
   width: 100%;
   max-width: 450px;
+  height: 90vh;
+  min-height: 80vh;
   background: #fff;
   padding: 30px;
   border-radius: 12px;
   box-shadow: 0px 4px 15px rgba(0,0,0,0.1);
   text-align: center;
+  margin: 0;
 }
 
 
@@ -37,7 +42,7 @@
 
 .form-group {
   text-align: left;
-  margin-bottom: 15px;
+  margin-bottom: 10px;
 }
 
 .form-group label {

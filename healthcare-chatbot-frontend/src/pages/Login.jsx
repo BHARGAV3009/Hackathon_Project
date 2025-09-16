@@ -15,15 +15,16 @@ export default function Login({ setUser }) {
     e.preventDefault();
     if (!email || !password) return setError('Please enter email and password');
     try {
-      const res = await fetch('http://localhost:5000/api/users/login', {
+      const res = await fetch('http://localhost:5000/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email })
+        body: JSON.stringify({ email, password })
       });
       const data = await res.json();
       if (!res.ok || !data.ok) throw new Error(data?.error || 'Login failed');
       const userDoc = data.user; // { _id, email, name }
-      const newUser = { id: userDoc._id, email: userDoc.email, name: userDoc.name };
+      const token = data.token;
+      const newUser = { id: userDoc._id, email: userDoc.email, name: userDoc.name, token };
       localStorage.setItem('hc_user', JSON.stringify(newUser));
       setUser(newUser);
       navigate('/home');
@@ -35,9 +36,9 @@ export default function Login({ setUser }) {
   return (
     <div className="login-container">
       <div className="login-box">
-        <h1>Log in or sign up</h1>
+        <h1>Log in</h1>
         <p className="subtitle">
-          You'll get smarter responses and can upload files, images, and more.
+          Login to begin your wellness journey.
         </p>
 
         <form onSubmit={onSubmit} className="login-form">

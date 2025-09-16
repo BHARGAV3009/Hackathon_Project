@@ -3,24 +3,17 @@ import mongoose from "mongoose";
 import axios from "axios";
 import Chat from "../models/Chat.js";
 import User from "../models/User.js";
+import { requireAuth } from "../middleware/auth.js";
 
 const router = express.Router();
 
-router.post("/", async (req, res) => {
+router.post("/", requireAuth, async (req, res) => {
   try {
     let { text, userId } = req.body || {};
     if (!text) return res.status(400).json({ error: "Missing text" });
 
-    // Resolve a valid ObjectId for the user
-    let effectiveUserId = null;
-    if (userId && mongoose.Types.ObjectId.isValid(userId)) {
-      effectiveUserId = new mongoose.Types.ObjectId(userId);
-    } else {
-      // Fallback to test user created on server start
-      const testUser = await User.findOne({ email: "bhargav@example.com" });
-      if (!testUser) return res.status(500).json({ error: "Server user not initialized" });
-      effectiveUserId = testUser._id;
-    }
+    // Use authenticated user
+    const effectiveUserId = new mongoose.Types.ObjectId(req.auth.userId);
 
     // Find or create chat document keyed by userId (matches schema)
     let chat = await Chat.findOne({ userId: effectiveUserId });
@@ -86,6 +79,18 @@ router.post("/", async (req, res) => {
   } catch (err) {
     console.error("Chat route error:", err);
     return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// GET /api/chat - fetch current user's chat history (latest first)
+router.get("/", requireAuth, async (req, res) => {
+  try {
+    const chat = await Chat.findOne({ userId: req.auth.userId });
+    const messages = chat?.messages?.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)) || [];
+    return res.json({ ok: true, messages });
+  } catch (err) {
+    console.error("Chat history error:", err?.message || err);
+    return res.status(500).json({ ok: false, error: "Failed to load chat history" });
   }
 });
 

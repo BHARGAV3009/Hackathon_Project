@@ -43,6 +43,7 @@ export default function Sidebar({ open, chats, selectedId, onSelect, onNewChat, 
           <li><NavLink to="/home" onClick={() => onToggle?.()}>🏠 Home</NavLink></li>
           <li><NavLink to="/diagnosis" onClick={() => onToggle?.()}>🧠 AI Diagnosis</NavLink></li>
           <li><NavLink to="/chat" onClick={() => onToggle?.()}>💬 AI Chat</NavLink></li>
+          <li><NavLink to="/history" onClick={() => onToggle?.()}>📜 History</NavLink></li>
         </ul>
       </nav>
 

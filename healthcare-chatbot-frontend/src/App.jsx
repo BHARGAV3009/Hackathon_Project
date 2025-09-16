@@ -8,6 +8,7 @@ import Chat from "./pages/Chat";
 import UploadImage from "./components/UploadImage";
 import Profile from "./pages/Profile";
 import Diagnosis from "./pages/Diagnosis";
+import History from "./pages/History";
 
 function Home() {
   // Simple home dashboard with AI Diagnosis and AI Chat cards
@@ -40,6 +41,19 @@ function Home() {
         }}>
           <div style={{ fontSize: 24, fontWeight: 700, marginBottom: 6 }}>AI Chat</div>
           <div style={{ color: '#445', lineHeight: 1.4 }}>Chat with the AI and upload images.</div>
+        </Link>
+
+        <Link to="/history" style={{
+          textDecoration: 'none',
+          background: '#fff',
+          borderRadius: 12,
+          padding: 24,
+          width: 280,
+          boxShadow: '0 4px 18px rgba(0,0,0,0.06)',
+          border: '1px solid #e6eaf0'
+        }}>
+          <div style={{ fontSize: 24, fontWeight: 700, marginBottom: 6 }}>My History</div>
+          <div style={{ color: '#445', lineHeight: 1.4 }}>View your past diagnoses, uploads, and chat.</div>
         </Link>
       </div>
     </div>
@@ -105,7 +119,7 @@ function App() {
           />
         )}
 
-        <div className={`chat-wrapper ${sidebarOpen ? "sidebar-open" : "sidebar-closed"}`}>
+        <div className={`chat-wrapper ${(!hideLayout && sidebarOpen) ? "sidebar-open" : "sidebar-closed"}`}>
           <Routes>
             <Route path="/login" element={user ? <Navigate to="/home" /> : <Login setUser={setUser} />} />
             <Route path="/signup" element={user ? <Navigate to="/home" /> : <Signup setUser={setUser} />} />
@@ -131,8 +145,11 @@ function App() {
               }
             />
 
-            {/* AI Diagnosis page placeholder */}
+            {/* AI Diagnosis page */}
             <Route path="/diagnosis" element={user ? <Diagnosis /> : <Navigate to="/login" />} />
+
+            {/* History page */}
+            <Route path="/history" element={user ? <History /> : <Navigate to="/login" />} />
 
             <Route path="/upload" element={user ? <UploadImage /> : <Navigate to="/login" />} />
             <Route path="/profile" element={user ? <Profile user={user} setUser={setUser} /> : <Navigate to="/login" />} />

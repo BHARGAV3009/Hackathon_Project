@@ -29,10 +29,11 @@ const Chat = ({ user, chats, setChats, selectedChatId, setSelectedChatId }) => {
     );
   };
 
-  const pushToActiveChat = (newMessages) => {
+  const pushToActiveChat = (newMessages, targetId) => {
+    const id = targetId ?? selectedChatId;
     setChats((prev) =>
       prev.map((chat) =>
-        chat.id === selectedChatId
+        chat.id === id
           ? { ...chat, messages: [...(chat.messages || []), ...newMessages], updatedAt: Date.now() }
           : chat
       )
@@ -57,7 +58,7 @@ const Chat = ({ user, chats, setChats, selectedChatId, setSelectedChatId }) => {
 
     const tempMsg = { role: "user", text: message || "", imageUrl: URL.createObjectURL(file), temp: true };
     setSelectedChatId(chatId);
-    pushToActiveChat([tempMsg]);
+    pushToActiveChat([tempMsg], chatId);
     renameIfFirstMessage(chatId, message || "Image");
     setMessage("");
   };
@@ -78,18 +79,21 @@ const Chat = ({ user, chats, setChats, selectedChatId, setSelectedChatId }) => {
       if (attachment) {
         const formData = new FormData();
         formData.append("file", attachment);
-        formData.append("userId", userId || "");
 
         const botTyping = { role: "bot", text: "..." };
-        pushToActiveChat([botTyping]);
+        pushToActiveChat([botTyping], chatId);
 
-        const res = await fetch("http://localhost:5000/api/upload", { method: "POST", body: formData });
+        const res = await fetch("http://localhost:5000/api/upload", {
+          method: "POST",
+          headers: user?.token ? { Authorization: `Bearer ${user.token}` } : undefined,
+          body: formData
+        });
         const data = await res.json();
         if (!res.ok) throw new Error(data?.error || "Upload failed");
 
         setChats((prev) =>
           prev.map((chat) =>
-            chat.id === selectedChatId
+            chat.id === chatId
               ? {
                   ...chat,
                   messages: chat.messages.map((m) => (m.temp ? { role: "user", text: m.text, imageUrl: data.fileUrl } : m)),
@@ -100,7 +104,7 @@ const Chat = ({ user, chats, setChats, selectedChatId, setSelectedChatId }) => {
 
         setChats((prev) =>
           prev.map((chat) =>
-            chat.id === selectedChatId
+            chat.id === chatId
               ? {
                   ...chat,
                   messages: chat.messages.map((m) => (m.text === "..." && m.role === "bot" ? { role: "bot", text: data.description } : m)),
@@ -116,23 +120,27 @@ const Chat = ({ user, chats, setChats, selectedChatId, setSelectedChatId }) => {
 
       // Text-only message
       const userTextMsg = { role: "user", text: message };
-      pushToActiveChat([userTextMsg]);
+      pushToActiveChat([userTextMsg], chatId);
       renameIfFirstMessage(chatId, message);
 
       // Add bot typing
-      pushToActiveChat([{ role: "bot", text: "..." }]);
+      pushToActiveChat([{ role: "bot", text: "..." }], chatId);
+      const outgoing = message; // snapshot to avoid race with setMessage
       setMessage("");
 
       const res = await fetch("http://localhost:5000/api/chat", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: message, userId }),
+        headers: {
+          "Content-Type": "application/json",
+          ...(user?.token ? { Authorization: `Bearer ${user.token}` } : {}),
+        },
+        body: JSON.stringify({ text: outgoing }),
       });
       const data = await res.json();
 
       setChats((prev) =>
         prev.map((chat) =>
-          chat.id === selectedChatId
+          chat.id === chatId
             ? {
                 ...chat,
                 messages: chat.messages.map((m) => (m.text === "..." && m.role === "bot" ? { role: "bot", text: data?.text || data?.reply } : m)),

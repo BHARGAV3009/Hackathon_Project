@@ -2,7 +2,10 @@ import mongoose from "mongoose";
 
 const diagnosisSchema = new mongoose.Schema(
   {
-    // Optional linkage to a user context coming from frontend
+    // Linkage to authenticated Mongo user (preferred)
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+
+    // Optional linkage to client-only context (legacy)
     clientUserId: { type: String }, // id from localStorage (frontend)
     userEmail: { type: String },
 

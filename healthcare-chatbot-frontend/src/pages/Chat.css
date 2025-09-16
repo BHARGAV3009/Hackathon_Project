@@ -4,7 +4,9 @@
 .chat-container {
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  height: 85vh;
+  margin: 20px auto;
+  /* border: 1px solid red; */
   background-color: #f7f7f8;
   padding: 16px;
   box-sizing: border-box;

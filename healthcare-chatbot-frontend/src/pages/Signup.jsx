@@ -27,7 +27,8 @@ export default function Signup({ setUser }) {
     const newUser = { id: `${Date.now()}`, email };
     localStorage.setItem('hc_user', JSON.stringify(newUser));
     setUser(newUser);
-    navigate('/chat');
+    // After signup, go to Home dashboard (not Chat)
+    navigate('/home');
   };
 
   return (

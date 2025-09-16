@@ -14,11 +14,26 @@ const Chat = ({ user, chats, setChats, selectedChatId, setSelectedChatId }) => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [chats, selectedChatId]);
 
+  const touch = (chatId) => {
+    setChats((prev) => prev.map((c) => (c.id === chatId ? { ...c, updatedAt: Date.now() } : c)));
+  };
+
+  const renameIfFirstMessage = (chatId, text) => {
+    if (!text) return;
+    setChats((prev) =>
+      prev.map((c) =>
+        c.id === chatId && (!c.title || c.title === "New chat")
+          ? { ...c, title: text.slice(0, 30) }
+          : c
+      )
+    );
+  };
+
   const pushToActiveChat = (newMessages) => {
     setChats((prev) =>
       prev.map((chat) =>
         chat.id === selectedChatId
-          ? { ...chat, messages: [...(chat.messages || []), ...newMessages] }
+          ? { ...chat, messages: [...(chat.messages || []), ...newMessages], updatedAt: Date.now() }
           : chat
       )
     );
@@ -26,7 +41,8 @@ const Chat = ({ user, chats, setChats, selectedChatId, setSelectedChatId }) => {
 
   const ensureChat = () => {
     if (!selectedChatId) {
-      const newChat = { id: Date.now(), title: `Chat ${chats.length + 1}`, messages: [] };
+      const now = Date.now();
+      const newChat = { id: now, title: "New chat", messages: [], createdAt: now, updatedAt: now };
       setChats([newChat, ...(chats || [])]);
       setSelectedChatId?.(newChat.id);
       return newChat.id;
@@ -36,16 +52,13 @@ const Chat = ({ user, chats, setChats, selectedChatId, setSelectedChatId }) => {
 
   const handlePickImage = (file) => {
     if (!file) return;
+    const chatId = ensureChat();
     setAttachment(file);
 
-    // Add temporary local message for preview
-    const tempMsg = {
-      role: "user",
-      text: message || "",
-      imageUrl: URL.createObjectURL(file),
-      temp: true, // mark as temporary
-    };
+    const tempMsg = { role: "user", text: message || "", imageUrl: URL.createObjectURL(file), temp: true };
+    setSelectedChatId(chatId);
     pushToActiveChat([tempMsg]);
+    renameIfFirstMessage(chatId, message || "Image");
     setMessage("");
   };
 
@@ -67,45 +80,36 @@ const Chat = ({ user, chats, setChats, selectedChatId, setSelectedChatId }) => {
         formData.append("file", attachment);
         formData.append("userId", userId || "");
 
-        // Add bot typing effect
         const botTyping = { role: "bot", text: "..." };
         pushToActiveChat([botTyping]);
 
-        const res = await fetch("http://localhost:5000/api/upload", {
-          method: "POST",
-          body: formData,
-        });
+        const res = await fetch("http://localhost:5000/api/upload", { method: "POST", body: formData });
         const data = await res.json();
         if (!res.ok) throw new Error(data?.error || "Upload failed");
 
-        // Replace temporary user image with uploaded image
         setChats((prev) =>
           prev.map((chat) =>
             chat.id === selectedChatId
               ? {
                   ...chat,
-                  messages: chat.messages.map((m) =>
-                    m.temp ? { role: "user", text: m.text, imageUrl: data.fileUrl } : m
-                  ),
+                  messages: chat.messages.map((m) => (m.temp ? { role: "user", text: m.text, imageUrl: data.fileUrl } : m)),
                 }
               : chat
           )
         );
 
-        // Replace bot typing with real response
         setChats((prev) =>
           prev.map((chat) =>
             chat.id === selectedChatId
               ? {
                   ...chat,
-                  messages: chat.messages.map((m) =>
-                    m.text === "..." && m.role === "bot" ? { role: "bot", text: data.description } : m
-                  ),
+                  messages: chat.messages.map((m) => (m.text === "..." && m.role === "bot" ? { role: "bot", text: data.description } : m)),
                 }
               : chat
           )
         );
 
+        touch(chatId);
         setAttachment(null);
         return;
       }
@@ -113,6 +117,7 @@ const Chat = ({ user, chats, setChats, selectedChatId, setSelectedChatId }) => {
       // Text-only message
       const userTextMsg = { role: "user", text: message };
       pushToActiveChat([userTextMsg]);
+      renameIfFirstMessage(chatId, message);
 
       // Add bot typing
       pushToActiveChat([{ role: "bot", text: "..." }]);
@@ -125,15 +130,13 @@ const Chat = ({ user, chats, setChats, selectedChatId, setSelectedChatId }) => {
       });
       const data = await res.json();
 
-      // Replace bot typing with real response
       setChats((prev) =>
         prev.map((chat) =>
           chat.id === selectedChatId
             ? {
                 ...chat,
-                messages: chat.messages.map((m) =>
-                  m.text === "..." && m.role === "bot" ? { role: "bot", text: data?.text || data?.reply } : m
-                ),
+                messages: chat.messages.map((m) => (m.text === "..." && m.role === "bot" ? { role: "bot", text: data?.text || data?.reply } : m)),
+                updatedAt: Date.now(),
               }
             : chat
         )
@@ -171,22 +174,15 @@ const Chat = ({ user, chats, setChats, selectedChatId, setSelectedChatId }) => {
       </div>
 
       <div className="chat-input">
-        <input
-          type="file"
-          accept="image/*"
-          style={{ display: "none" }}
-          ref={fileInputRef}
-          onChange={handleImageInputChange}
-        />
-        <button className="plus-btn" onClick={() => fileInputRef.current?.click()}>
-          ➕
-        </button>
+        <input type="file" accept="image/*" style={{ display: "none" }} ref={fileInputRef} onChange={handleImageInputChange} />
+        <button className="plus-btn" onClick={() => fileInputRef.current?.click()} title="Upload image">➕</button>
 
         <input
           type="text"
           value={message}
           onChange={(e) => setMessage(e.target.value)}
-          placeholder="Type a message..." id="chat-input-field"
+          placeholder="Message HealthBot..."
+          id="chat-input-field"
           disabled={sending}
           onKeyDown={(e) => e.key === "Enter" && !sending && handleSend()}
         />

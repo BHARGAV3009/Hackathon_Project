@@ -1,9 +1,9 @@
+// server.js
 import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import path from "path";
 import fs from "fs";
-// server.js
 import cors from "cors";
 
 // Routes
@@ -11,6 +11,9 @@ import chatRoutes from "./routes/chat.js";
 import predictRoutes from "./routes/predict.js";
 import reminderRoutes from "./routes/reminder.js";
 import uploadRoutes from "./routes/upload.js";
+import geminiRoutes from "./routes/gemini.js";
+import diagnosisRoutes from "./routes/diagnosis.js"; // 👈 NEW
+import usersRoutes from "./routes/users.js";
 
 // Models
 import User from "./models/User.js";
@@ -30,25 +33,32 @@ if (!fs.existsSync(UPLOADS_DIR)) {
 app.use("/uploads", express.static(UPLOADS_DIR));
 
 // MongoDB connection
-mongoose.connect(process.env.MONGO_URI)
+mongoose
+  .connect(process.env.MONGO_URI)
   .then(async () => {
     console.log("✅ MongoDB connected successfully!");
 
     // Insert a test user if not exists
     const existingUser = await User.findOne({ email: "bhargav@example.com" });
     if (!existingUser) {
-      const testUser = new User({ name: "Bhargav", email: "bhargav@example.com" });
+      const testUser = new User({
+        name: "Bhargav",
+        email: "bhargav@example.com",
+      });
       await testUser.save();
       console.log("✅ Test user inserted into users collection!");
     }
   })
-  .catch(err => console.error("❌ MongoDB connection error:", err));
+  .catch((err) => console.error("❌ MongoDB connection error:", err));
 
 // Routes
 app.use("/api/chat", chatRoutes);
 app.use("/api/predict", predictRoutes);
 app.use("/api/reminder", reminderRoutes);
 app.use("/api/upload", uploadRoutes);
+app.use("/api/gemini", geminiRoutes);
+app.use("/api/diagnosis", diagnosisRoutes); // 👈 Diagnosis endpoint
+app.use("/api/users", usersRoutes);
 
 // Test route
 app.get("/", (req, res) => {

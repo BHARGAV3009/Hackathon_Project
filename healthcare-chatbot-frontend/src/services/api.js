@@ -31,3 +31,14 @@ export async function predictHealthApi(vitals) {
   if (!res.ok) throw new Error("Prediction failed");
   return res.json();
 }
+
+// 👇 NEW Gemini API function
+export async function geminiApi(prompt) {
+  const res = await fetch(`${API_BASE}/api/gemini`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ prompt }),
+  });
+  if (!res.ok) throw new Error("Gemini request failed");
+  return res.json();
+}

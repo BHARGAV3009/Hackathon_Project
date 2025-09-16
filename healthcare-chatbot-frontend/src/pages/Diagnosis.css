@@ -1,0 +1,156 @@
+/* Diagnosis page — modern 2025 UI */
+
+:root {
+  /* Light theme palette */
+  --bg: #f7f8fb;
+  --card-bg: #ffffff;
+  --text: #0f172a;
+  --muted: #64748b;
+  --border: #e6eaf0;
+  --ring: #2563eb;
+  --ring-soft: rgba(37, 99, 235, 0.15);
+  --shadow: 0 8px 30px rgba(2, 6, 23, 0.06);
+  --shadow-hover: 0 12px 40px rgba(2, 6, 23, 0.10);
+  --accent: #2563eb;
+  --accent-ink: #0b2a6b;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0b0f19;
+    --card-bg: #0f172a;
+    --text: #e5e7eb;
+    --muted: #9ca3af;
+    --border: #1f2937;
+    --ring: #60a5fa;
+    --ring-soft: rgba(96, 165, 250, 0.18);
+    --shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+    --shadow-hover: 0 12px 40px rgba(0, 0, 0, 0.45);
+    --accent: #60a5fa;
+    --accent-ink: #dbeafe;
+  }
+}
+
+/* Page wrapper */
+.diagnosis-page {
+  padding: clamp(20px, 4vw, 32px);
+  color: var(--text);
+}
+
+/* Title */
+.diagnosis-title {
+  font-size: clamp(24px, 3vw, 32px);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin: 0 0 14px 0;
+  background: linear-gradient(92deg, var(--text), var(--muted));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: Black;
+}
+
+/* Card-like form container */
+.diagnosis-form {
+  display: grid;
+  gap: 14px;
+  max-width: 720px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: var(--shadow);
+  padding: clamp(16px, 3vw, 22px);
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+
+/* Field grouping */
+.diagnosis-form > div {
+  display: grid;
+  gap: 6px;
+}
+
+.diagnosis-form label {
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+/* Inputs */
+.diagnosis-form input[type="number"],
+.diagnosis-form input[type="text"],
+.diagnosis-form input[type="file"] {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 12px;
+  outline: none;
+  transition: border-color 160ms ease, box-shadow 160ms ease, transform 80ms ease;
+}
+
+.diagnosis-form input::placeholder { color: var(--muted); }
+
+.diagnosis-form input:focus {
+  border-color: var(--ring);
+  box-shadow: 0 0 0 4px var(--ring-soft);
+}
+
+/* Submit button occupies full row on small screens */
+.diagnosis-form button[type="submit"] {
+  grid-column: 1 / -1;
+  justify-self: start;
+  appearance: none;
+  border: 1px solid transparent;
+  background: linear-gradient(180deg, var(--accent), #1d4ed8);
+  color: white;
+  font-weight: 600;
+  padding: 11px 16px;
+  border-radius: 12px;
+  cursor: pointer;
+  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.25);
+  transition: transform 120ms ease, box-shadow 200ms ease, filter 200ms ease;
+}
+
+.diagnosis-form button[type="submit"]:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-hover);
+  filter: brightness(1.05);
+}
+
+.diagnosis-form button[type="submit"][disabled] {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Error message */
+.diagnosis-error {
+  color: #ef4444;
+  margin-top: 14px;
+  font-weight: 600;
+}
+
+/* Result card */
+.diagnosis-result {
+  margin-top: 16px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: clamp(14px, 2.4vw, 18px);
+  box-shadow: var(--shadow);
+}
+
+.diagnosis-result strong {
+  color: var(--text);
+}
+
+/* Fine-tuning for file input for better alignment */
+.diagnosis-form input[type="file"] {
+  padding: 8px 10px;
+}
+
+/* Subtle separator spacing for the last notes block */
+.diagnosis-result > div + div {
+  margin-top: 6px;
+}
+
+.diagnosis-image-input {
+    border: 1px solid red;
+}

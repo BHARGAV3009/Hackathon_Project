@@ -1,9 +1,13 @@
 /* Global layout */
-html, body, #root {
-  height: 100%;
-}
+html, body, #root { height: 100%; }
 
-body {
-  background: #f9fafb;
-  color: #111827;
+body { background: #f9fafb; color: #111827; }
+
+/* Push main content below fixed header (56px) */
+.app .app-body { padding-top: 56px; }
+
+/* Ensure messages area isn't hidden behind sidebar */
+.chat-wrapper { margin-left: 0; }
+@media (min-width: 768px) {
+  .chat-wrapper { margin-left: 280px; }
 }
